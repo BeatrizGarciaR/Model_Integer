@@ -18,14 +18,14 @@ import time
 
 import xlwt
 
+#tamaños_I = [168]
+#tamaños_L = [16, 50, 100]
+#tamaños_S = [10, 50, 150]
+
+
 tamaños_I = [168]
-tamaños_L = [16, 50, 100]
-tamaños_S = [10, 50, 150]
-
-
-# tamaños_I = [168]
-# tamaños_L = [16]
-# tamaños_S = [10]
+tamaños_L = [16]
+tamaños_S = [10]
 
 K = [1,2]
 

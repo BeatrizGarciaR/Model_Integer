@@ -18,18 +18,18 @@ import time
 
 import xlwt
 
-#tamaños_I = [168]
-#tamaños_L = [16, 50, 100]
-#tamaños_S = [10, 50, 150]
-
-
 tamaños_I = [168]
-tamaños_L = [16]
-tamaños_S = [10]
+tamaños_L = [16, 50, 100]
+tamaños_S = [10, 50, 150]
+
+
+# tamaños_I = [168]
+# tamaños_L = [16]
+# tamaños_S = [10]
 
 K = [1,2]
 
-timelim = 7200 #2 horas 
+timelim = 10800 #3 horas 
 rates = [0.4]
 verif = 0.4
 

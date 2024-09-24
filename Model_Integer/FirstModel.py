@@ -34,7 +34,7 @@ rates = [0.4]
 verif = 0.4
 
 #ambulance = [[10,6], [20,11], [35,20]]
-ambulance = [[10,6]]
+ambulance = [[35,20]]
 t = 10
 tmax = 30
 alpha_i = [0.65, 0.2, 0.1, 0.05]

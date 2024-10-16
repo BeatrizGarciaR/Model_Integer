@@ -18,8 +18,8 @@ import time
 
 import xlwt
 
-tamaños_I = [900, 1500]
-tamaños_L = [16, 50, 100]
+tamaños_I = [500]
+tamaños_L = [50, 100]
 tamaños_S = [10, 50, 100, 150, 200]
 
 

@@ -31,7 +31,7 @@ for iconj in range(len(tamaños_I)):
                 
                 eta = ambulance[k]
 
-                archivo = open('Resultados_Prueba_FirstModel_210924_'
+                archivo = open('Resultados_Prueba_FirstModel_Modified_210924_'
                           +str(tamaños_I[iconj])+str('_')
                           +str(tamaños_L[jconj])+str('_')
                           +str(tamaños_S[sconj])
@@ -41,7 +41,7 @@ for iconj in range(len(tamaños_I)):
                 line = archivo.readline().strip().split()
                 line = archivo.readline().strip().split()
                 
-                f = open ('Location_FirstModel_210924_'
+                f = open ('Location_FirstModel_Modified_210924_'
                               +str(tamaños_I[iconj])+str('_')
                               +str(tamaños_L[jconj])+str('_')
                               +str(tamaños_S[sconj])+'_'+str(eta[0])+'_'+str(eta[1])+'.txt','w')
@@ -54,7 +54,7 @@ for iconj in range(len(tamaños_I)):
                 
                 
                 line = archivo.readline()
-                g = open ('Dispatch_FirstModel_210924_'
+                g = open ('Dispatch_FirstModel_Modified_210924_'
                               +str(tamaños_I[iconj])+str('_')
                               +str(tamaños_L[jconj])+str('_')
                               +str(tamaños_S[sconj])+'_'+str(eta[0])+'_'+str(eta[1])+'.txt','w')
@@ -66,54 +66,54 @@ for iconj in range(len(tamaños_I)):
                 g.close()
                 
                 
-                h = open ('Full_FirstModel_210924_'
+                h = open ('Full_FirstModel_Modified_210924_'
                               +str(tamaños_I[iconj])+str('_')
                               +str(tamaños_L[jconj])+str('_')
                               +str(tamaños_S[sconj])+'_'+str(eta[0])+'_'+str(eta[1])+'.txt','w')
                 
-                while "Full" in line:
+                while "Total" in line and "Total late" not in line:
                     h.write(line)
                     line = archivo.readline()
                         
                 h.close()
                 
-                o = open ('Partial1_FirstModel_210924_'
+                o = open ('Partial1_FirstModel_Modified_210924_'
                               +str(tamaños_I[iconj])+str('_')
                               +str(tamaños_L[jconj])+str('_')
                               +str(tamaños_S[sconj])+'_'+str(eta[0])+'_'+str(eta[1])+'.txt','w')
                 
-                while "Partial1" in line:
+                while "Total late" in line:
                     o.write(line)
                     line = archivo.readline()
                         
                 o.close()
                 
                 
-                p = open ('Partial2_FirstModel_210924_'
+                p = open ('Partial2_FirstModel_Modified_210924_'
                               +str(tamaños_I[iconj])+str('_')
                               +str(tamaños_L[jconj])+str('_')
                               +str(tamaños_S[sconj])+'_'+str(eta[0])+'_'+str(eta[1])+'.txt','w')
                 
-                while "Partial2" in line:
+                while "Partial" in line and "Partial late" not in line:
                     p.write(line)
                     line = archivo.readline()
                         
                 p.close()
                 
                 
-                q = open ('Partial3_FirstModel_210924_'
+                q = open ('Partial3_FirstModel_Modified_210924_'
                               +str(tamaños_I[iconj])+str('_')
                               +str(tamaños_L[jconj])+str('_')
                               +str(tamaños_S[sconj])+'_'+str(eta[0])+'_'+str(eta[1])+'.txt','w')
                 
-                while "Partial3" in line:
+                while "Partial late" in line:
                     q.write(line)
                     line = archivo.readline()
                         
                 q.close()
                     
                 
-                r = open ('Null_FirstModel_210924_'
+                r = open ('Null_FirstModel_Modified_210924_'
                               +str(tamaños_I[iconj])+str('_')
                               +str(tamaños_L[jconj])+str('_')
                               +str(tamaños_S[sconj])+'_'+str(eta[0])+'_'+str(eta[1])+'.txt','w')
@@ -140,12 +140,12 @@ for iconj in range(len(tamaños_I)):
                     line_1 = h.readline()
                 
                 
-                un = open ('ScAccidents_FirstModel_210924_'
+                un = open ('ScAccidents_FirstModel_Modified_210924_'
                               +str(tamaños_I[iconj])+str('_')
                               +str(tamaños_L[jconj])+str('_')
                               +str(tamaños_S[sconj])+'.txt','w')
                 
-                u = open ('Accidents_FirstModel_210924_'
+                u = open ('Accidents_FirstModel_Modified_210924_'
                               +str(tamaños_I[iconj])+str('_')
                               +str(tamaños_L[jconj])+str('_')
                               +str(tamaños_S[sconj])+'.txt','w')
@@ -192,7 +192,7 @@ for iconj in range(len(tamaños_I)):
                 
                 # # u.close()
                 
-                # tim = open ('rli_FirstModel_210924_'
+                # tim = open ('rli_FirstModel_Modified_210924_'
                 #               +str(tamaños_I[iconj])+str('_')
                 #               +str(tamaños_L[jconj])+str('_')
                 #               +str(tamaños_S[sconj])+'.txt','w')
@@ -201,7 +201,7 @@ for iconj in range(len(tamaños_I)):
                 #     line_1 = h.readline()
                 #     tim.write(line_1)
                     
-                # v = open ('Cli_FirstModel_210924_'
+                # v = open ('Cli_FirstModel_Modified_210924_'
                 #               +str(tamaños_I[iconj])+str('_')
                 #               +str(tamaños_L[jconj])+str('_')
                 #               +str(tamaños_S[sconj])+'.txt','w')

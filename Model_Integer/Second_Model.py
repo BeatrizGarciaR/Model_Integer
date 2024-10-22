@@ -18,13 +18,13 @@ import time
 
 import xlwt
 
-# tamaños_I = [168, 270, 500, 900, 1500] #Hasta aquí puede bien el modelo
-# tamaños_L = [16, 30, 50, 70, 100]
-# tamaños_S = [10, 50, 100, 150, 200]
+tamaños_I = [168, 270, 500, 900, 1500] #Hasta aquí puede bien el modelo
+tamaños_L = [16, 50, 100]
+tamaños_S = [10, 50, 100, 150, 200]
 
-tamaños_I = [168] #Aquí batalla pero sí lo hace aún
-tamaños_L = [16]
-tamaños_S = [10]
+##tamaños_I = [168] #Aquí batalla pero sí lo hace aún
+##tamaños_L = [16]
+##tamaños_S = [10]
 
 # tamaños_I = [168, 270, 500, 900, 1500] 
 # tamaños_L = [16, 50, 100]
@@ -32,7 +32,7 @@ tamaños_S = [10]
 
 K = [1,2]
 
-timelim = 10800 #3 horas 
+timelim = 3600 #1 hora 
 rates = [0.4]
 verif = 0.4
 
@@ -138,7 +138,10 @@ for iconj in range(len(tamaños_I)):
                     line = archivo.readline().strip().split()
                     cli.append([])
                     for i in range(len(I)):
-                        cli[l].append(float(line[i])) 
+                        if float(line[i]) == 1:
+                            cli[l].append(1)
+                        else:
+                            cli[l].append(0)
                 
                 
                 # Other parameters #

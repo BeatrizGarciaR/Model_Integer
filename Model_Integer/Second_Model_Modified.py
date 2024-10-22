@@ -23,17 +23,17 @@ import xlwt
 # tamaños_L = [16, 30, 50, 70, 100]
 # tamaños_S = [10, 50, 100, 150, 200]
 
-tamaños_I = [168] #Aquí batalla pero sí lo hace aún
-tamaños_L = [16]
-tamaños_S = [10]
+##tamaños_I = [168] #Aquí batalla pero sí lo hace aún
+##tamaños_L = [16]
+##tamaños_S = [10]
 
-# tamaños_I = [168, 270, 500, 900, 1500] 
-# tamaños_L = [16, 50, 100]
-# tamaños_S = [10, 50, 100, 150, 200]
+tamaños_I = [168, 270, 500, 900, 1500] 
+tamaños_L = [16, 50, 100]
+tamaños_S = [10, 50, 100, 150, 200]
 
 K = [1,2]
 
-timelim = 10800 #3 horas 
+timelim = 3600 #1 horas 
 rates = [0.4]
 verif = 0.4
 
@@ -45,7 +45,7 @@ w_vars = [0.7, 0.3]
 countcsv = 1
        
 book=xlwt.Workbook(encoding="utf-8",style_compression=0)
-sheet = book.add_sheet('Tesis_SecondModelModified_210924', cell_overwrite_ok=True)
+sheet = book.add_sheet('Tesis_SecondModified_210924', cell_overwrite_ok=True)
 
 def data_cb(m, where):
     if where == gp.GRB.Callback.MIPSOL:
@@ -139,7 +139,10 @@ for iconj in range(len(tamaños_I)):
                     line = archivo.readline().strip().split()
                     cli.append([])
                     for i in range(len(I)):
-                        cli[l].append(float(line[i])) 
+                        if float(line[i]) == 1:
+                            cli[l].append(1)
+                        else:
+                            cli[l].append(0)
                 
                 
                 # Other parameters #
@@ -249,170 +252,76 @@ for iconj in range(len(tamaños_I)):
                 
                 for s in range(len(S)):
                     
-                    # Restricción 2: No localizar más ambulancias de las disponibles en el sistema
+                    # Restricción 1: No localizar más ambulancias de las disponibles en el sistema
                     for k in K:
-                        model.addConstr(gp.quicksum(x_vars[l,k] for l in L) <= eta[k-1], "c2")
+                        model.addConstr(gp.quicksum(x_vars[l,k] for l in L) <= eta[k-1], "c1")
                     
-                    # Restricción 3: No enviar más ambulancias de las localizadas para k = 1
+                    # Restricción 2: No enviar más ambulancias de las localizadas para k = 1
                     for l in L: 
                         amb1 = gp.LinExpr()
                         for i in I:
                             if S[s][i-1][0] != 0:                            
                                 amb1 += u_vars[s+1,l,1,i] + v_vars[s+1,l,1,i]
-                        model.addConstr(amb1 <= x_vars[l,1], "c3")                       
+                        model.addConstr(amb1 <= x_vars[l,1], "c2")                       
                         
-                    # Restricción 4: No enviar más ambulancias de las localizadas para k = 2
+                    # Restricción 2_1: No enviar más ambulancias de las localizadas para k = 2
                     for l in L:
                         amb2 = gp.LinExpr()
                         for i in I:
                             if S[s][i-1][0] != 0:
                                 amb2 += u_vars[s+1,l,2,i] + v_vars[s+1,l,2,i]
-                            if S[s][i-1][1] != 0 and S[s][i-1][0] == 0:
+                            if S[s][i-1][1] != 0:
                                 amb2 += u_vars[s+1,l,2,i] + v_vars[s+1,l,2,i]
-                        model.addConstr(amb2 <= x_vars[l,2], "c4")
-                        
-                        
-                    ###############################################
-                    ############################################
-                    ##### AQUI ME QUEDE
-                    #####################################
-                    #####################################
-                                     
-                    # Restricción 6: No enviar más ambulancias de las necesarias para k = 1
-                    for i in I: 
-                        if S[s][i-1][0] != 0: 
-                            model.addConstr(gp.quicksum(u_vars[s+1,l,1,i] for l in L) <= S[s][i-1][0], "c6")   
-                    
-                            
-                    # Restricción 7: No enviar más ambulancias de las necesarias para k = 2
-                    for i in I:
-                        amb = gp.LinExpr()
-                        if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:
-                            if S[s][i-1][0] != 0:
-                                amb += gp.quicksum(u_vars[s+1,l,2,i] for l in L) 
-                            if S[s][i-1][1] != 0 and S[s][i-1][0] == 0:
-                                amb += gp.quicksum(u_vars[s+1,l,2,i] for l in L) 
-                            model.addConstr(amb <= S[s][i-1][1], "c7")
-                            
-                    # Restricción 8: No exceder cli para k = 1
+                        model.addConstr(amb2 <= x_vars[l,2], "c2_1")
+
+                    # Restricción 3: No exceder cli para k = 1
                     for l in L:
                         for i in I: 
                             if S[s][i-1][0] != 0:                       
-                                model.addConstr(u_vars[s+1,l,1,i] <= cli[l-1][i-1], "c8")  
+                                model.addConstr(u_vars[s+1,l,1,i] <= cli[l-1][i-1]*(S[s][i-1][0]+S[s][i-1][1]), "c3")  
                     
 
-                    # Restricción 9: No exceder cli para k = 2
+                    # Restricción 3_1: No exceder cli para k = 2
                     for l in L:
                         for i in I: 
+                            if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:
+                                model.addConstr(u_vars[s+1,l,2,i] <= cli[l-1][i-1]*(S[s][i-1][0]+S[s][i-1][1]), "c3_1")  
+                        
+
+                    # Restricción 4: solo se activan u_vars o v_vars si se necesitan
+                    for l in L:
+                        for i in I:
+                            suma = gp.LinExpr()
                             if S[s][i-1][0] != 0:
-                                model.addConstr(u_vars[s+1,l,2,i] <= cli[l-1][i-1], "c9")  
-                            if S[s][i-1][1] != 0 and S[s][i-1][0] == 0:
-                                model.addConstr(u_vars[s+1,l,2,i] <= cli[l-1][i-1], "c9") 
-                                
-                    # Restricción 10: solo se prende u_vars o v_vars o ninguna para k = 1
+                                    suma += u_vars[s+1,l,1,i] + u_vars[s+1,l,2,i] + v_vars[s+1,l,1,i] + v_vars[s+1,l,2,i]
+                            if S[s][i-1][1] != 0:
+                                    suma += u_vars[s+1,l,2,i] + v_vars[s+1,l,2,i]
+                            model.addConstr(suma <= S[s][i-1][0]+S[s][i-1][1], "c4")
+
+                    # Restricción 5: solo se activan u_vars o v_vars si se necesitan
                     for l in L:
-                        for i in I: 
-                            if S[s][i-1][0] != 0:                       
-                                model.addConstr(u_vars[s+1,l,1,i] + v_vars[s+1,l,1,i] <= 1, "c10") 
-                                    
-     
-                    # Restricción 11: solo se prende u_vars o v_vars o ninguna para k = 2
-                    for l in L:
-                        for i in I: 
+                        for i in I:
                             if S[s][i-1][0] != 0:
-                                model.addConstr(u_vars[s+1,l,2,i] + v_vars[s+1,l,2,i] <= 1, "c11") 
-                            if S[s][i-1][1] != 0 and S[s][i-1][0] == 0:
-                                model.addConstr(u_vars[s+1,l,2,i] + v_vars[s+1,l,2,i] <= 1, "c11") 
-                                
-                    # Restricción 12: suma de variables igual a aik para k = 1
-                    for i in I: 
+                                model.addConstr(u_vars[s+1,l,1,i] + v_vars[s+1,l,1,i] <= S[s][i-1][0], "c5")  
+
+
+                    # Restricción 6: suma de variables igual a suma aik para
+                    for i in I:
+                        suma1 = gp.LinExpr()
                         if S[s][i-1][0] != 0:                       
-                            model.addConstr(gp.quicksum(u_vars[s+1,l,1,i] + v_vars[s+1,l,1,i] for l in L) + gamma_vars[s+1,1,i] == S[s][i-1][0], "c12") 
-                  
-                    # Restricción 13: suma de variables igual a aik para k = 2
+                            suma1 += gp.quicksum(u_vars[s+1,l,k,i] + v_vars[s+1,l,k,i] + gamma_vars[s+1,k,i] for l in L for k in K)
+                        if S[s][i-1][1] != 0:                       
+                            suma1 += gp.quicksum(u_vars[s+1,l,2,i] + v_vars[s+1,l,2,i] + gamma_vars[s+1,2,i] for l in L) 
+                        model.addConstr(S[s][i-1][0]+S[s][i-1][1] <= suma1 , "c6") 
+                      
+                    # Restricción 7: suma de variables igual a suma aik para
                     for i in I:
-                        amb = gp.LinExpr()
-                        if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:
-                            if S[s][i-1][0] != 0:
-                                amb += gp.quicksum(u_vars[s+1,l,2,i] + v_vars[s+1,l,2,i] for l in L)
-                            if S[s][i-1][1] != 0 and S[s][i-1][0] == 0:
-                                amb += gp.quicksum(u_vars[s+1,l,2,i] + v_vars[s+1,l,2,i] for l in L)
-                            model.addConstr(amb + gamma_vars[s+1,2,i] == S[s][i-1][1], "c13") 
-                    
-                    # Restricción 14: No enviar más ambulancias de las necesarias para k = 1
-                    for i in I: 
-                        if S[s][i-1][0] != 0: 
-                            model.addConstr(gp.quicksum(v_vars[s+1,l,1,i] for l in L) <= S[s][i-1][0], "c14") 
-                  
-           
-                    # Restricción 15: No enviar más ambulancias de las necesarias para k = 2
-                    
-                    for i in I:
-                        amb = gp.LinExpr()
-                        if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:
-                            if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:
-                                if S[s][i-1][0] != 0:
-                                    amb += gp.quicksum(v_vars[s+1,l,2,i] for l in L) 
-                                if S[s][i-1][1] != 0 and S[s][i-1][0] == 0:
-                                    amb += gp.quicksum(v_vars[s+1,l,2,i] for l in L) 
-                            model.addConstr(amb <= S[s][i-1][1], "c15")
-                     
-                    # Restricción 16: No enviar más de las necesarias y + v para k = 1
-                    for i in I: 
-                        if S[s][i-1][0] != 0: 
-                            model.addConstr(gp.quicksum(u_vars[s+1,l,1,i] + v_vars[s+1,l,1,i] for l in L) <= S[s][i-1][0], "c16") 
-                            
-                    
-                    # Restricción 17: No enviar más de las necesarias y + v para k = 2
-                    
-                    for i in I:
-                        amb = gp.LinExpr()
-                        if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:
-                            if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:
-                                if S[s][i-1][0] != 0:
-                                    amb += gp.quicksum(u_vars[s+1,l,2,i] + v_vars[s+1,l,2,i] for l in L) 
-                                if S[s][i-1][1] != 0 and S[s][i-1][0] == 0:
-                                    amb += gp.quicksum(u_vars[s+1,l,2,i] + v_vars[s+1,l,2,i] for l in L) 
-                            model.addConstr(amb <= S[s][i-1][1], "c17")
-                     
-                    
-                    # Restricción 18: 
-                    for i in I: 
-                        if S[s][i-1][0] != 0: 
-                            model.addConstr(gp.quicksum(u_vars[s+1,l,1,i] for l in L) <= x_vars[l,1], "c18") 
-                            
-                    
-                    # Restricción 19: 
-                    
-                    for i in I:
-                        amb = gp.LinExpr()
-                        if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:
-                            if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:
-                                if S[s][i-1][0] != 0:
-                                    amb += gp.quicksum(u_vars[s+1,l,2,i] for l in L) 
-                                if S[s][i-1][1] != 0 and S[s][i-1][0] == 0:
-                                    amb += gp.quicksum(u_vars[s+1,l,2,i] for l in L) 
-                            model.addConstr(amb <= x_vars[l,2], "c19")
-                        
-                    # Restricción 20: 
-                    for i in I: 
-                        if S[s][i-1][0] != 0: 
-                            model.addConstr(gp.quicksum(v_vars[s+1,l,1,i] for l in L) <= x_vars[l,1], "c20") 
-                            
-                    
-                    # Restricción 21: 
-                    
-                    for i in I:
-                        amb = gp.LinExpr()
-                        if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:
-                            if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:
-                                if S[s][i-1][0] != 0:
-                                    amb += gp.quicksum(v_vars[s+1,l,2,i] for l in L) 
-                                if S[s][i-1][1] != 0 and S[s][i-1][0] == 0:
-                                    amb += gp.quicksum(v_vars[s+1,l,2,i] for l in L) 
-                            model.addConstr(amb <= x_vars[l,2], "c21")
-                        
-                    
+                        suma1 = gp.LinExpr()
+                        if S[s][i-1][0] != 0 or S[s][i-1][1] != 0:                       
+                            suma1 += gp.quicksum(u_vars[s+1,l,2,i] + v_vars[s+1,l,2,i] + gamma_vars[s+1,2,i] for l in L) 
+                        model.addConstr(S[s][i-1][1] <= suma1, "c7") 
+
+                                     
     
                 # Optimize model
                 model.optimize(callback=data_cb)
